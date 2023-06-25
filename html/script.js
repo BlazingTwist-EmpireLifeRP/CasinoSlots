@@ -127,7 +127,7 @@ function reverseStr(str) {
 }
 
 let canDouble = 0;
-const colorHistory = [-1];
+const colorHistory = Array(8).fill(-1);
 
 let timesPayoutDoubled = 0;
 
@@ -164,22 +164,23 @@ function looseDouble() {
 
 function voteColor(x, color) {
     const randomColor = Math.floor(Math.random() * (2));
-    colorHistory[colorHistory.length] = randomColor;
+    colorHistory.shift(); // remove the oldest entry
+    colorHistory.push(randomColor);
 
-    let pls = 1;
-    for (let historyIndex = colorHistory.length; historyIndex >= colorHistory.length - 8; historyIndex--) {
-        let imgColor = "none";
-        if (colorHistory[historyIndex] == 1) {
-            imgColor = 'black';
+    for (let i = 0; i < colorHistory.length; i++) {
+        const panelId = '#h' + (i + 1);
+        const $historyPanel = $(panelId)
+        $historyPanel.empty();
+
+        let historyColor = null;
+        if (colorHistory[i] === 0) {
+            historyColor = 'black';
+        } else if (colorHistory[i] === 1) {
+            historyColor = 'red';
         }
-        if (colorHistory[historyIndex] == 0) {
-            imgColor = 'red';
-        }
-        let $h_pls = $('#h' + pls);
-        $h_pls.empty();
-        if (imgColor !== "none") {
-            $h_pls.append("<img src='img/" + imgColor + ".png' width=30px height=30px/>");
-            pls++;
+
+        if(historyColor !== null) {
+            $historyPanel.append("<img src='img/" + historyColor + ".png' width=30px height=30px/>");
         }
     }
 
