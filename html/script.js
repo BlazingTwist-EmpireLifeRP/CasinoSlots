@@ -88,7 +88,7 @@ let bet = 50;
 let backCoins = coins * 2;
 let backBet = bet * 2;
 
-let rolling = 0;
+let machineIsRolling = false;
 
 function insertCoin(amount) {
     coins += amount;
@@ -318,35 +318,37 @@ function spin(timer) {
             setTimeout(setWinner, 3200 + 0.4 * p * 1000 + 0.3 * k * 1000, cords[lines[k][p][0]][lines[k][p][1]], lvl);
         }
     }
-    setTimeout(function () { rolling = 0; }, 4500);
+    setTimeout(function () { machineIsRolling = false; }, 4500);
 }
 
 function pressROLL() {
-    if (rolling == 0) {
-        if (canDouble == 0) {
-            if (backCoins / 2 !== coins) {
-                coins = backCoins / 2;
-            }
-            if (backBet / 2 !== bet) {
-                bet = backBet / 2;
-            }
+    if (machineIsRolling) {
+        return; // ignore input while rolling
+    }
 
-            audioFiles.button.play();
-            $('.slot').removeClass('winner1 winner2');
-            if (coins >= bet && coins !== 0) {
-                insertCoin(-bet);
-
-                rolling = 1;
-                const timer = 2;
-                spin(timer);
-            } else if (bet != coins && bet != 50) {
-                setBet(coins);
-            }
-        } else {
-            setTimeout(insertCoin, 200, canDouble);
-            audioFiles.collect.play();
-            looseDouble();
+    if (canDouble == 0) {
+        if (backCoins / 2 !== coins) {
+            coins = backCoins / 2;
         }
+        if (backBet / 2 !== bet) {
+            bet = backBet / 2;
+        }
+
+        audioFiles.button.play();
+        $('.slot').removeClass('winner1 winner2');
+        if (coins >= bet && coins !== 0) {
+            insertCoin(-bet);
+
+            machineIsRolling = true;
+            const timer = 2;
+            spin(timer);
+        } else if (bet != coins && bet != 50) {
+            setBet(coins);
+        }
+    } else {
+        setTimeout(insertCoin, 200, canDouble);
+        audioFiles.collect.play();
+        looseDouble();
     }
 }
 
@@ -421,8 +423,8 @@ function toggleSlotMachine(start, numCoins) {
 
         resetRings();
 
-        rolling = 1;
-        setTimeout(function () { rolling = 0; }, 4000);
+        machineIsRolling = true;
+        setTimeout(function () { machineIsRolling = 0; }, 4000);
     } else {
         allFile.css("display", "none");
         $.post("http://empire_slotovi/exitWith", JSON.stringify({
