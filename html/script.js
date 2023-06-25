@@ -34,17 +34,53 @@ const winTable = [
 const SLOTS_PER_REEL = 12;
 const REEL_RADIUS = 209;
 
-const audios = [];
-const audioIds = [
-    "changeBet",
-    "pornestePacanele",
-    "alarma",
-    "winLine",
-    "collect",
-    "winDouble",
-    "seInvarte",
-    "apasaButonul"
-];
+class AudioFile {
+    /**
+     * @param fileName String
+     * @param volume number
+     */
+    constructor(fileName, volume) {
+        this.fileName = fileName;
+        this.player = null;
+    }
+
+    /**
+     * Add the audioFile to the document
+     */
+    _load() {
+        this.player = document.createElement('audio');
+        this.player.setAttribute('src', 'audio/' + this.fileName + '.wav');
+        this.player.volume = volume;
+    }
+
+    /**
+     * @return {Promise<void> | null}
+     */
+    play() {
+        if (!$('#sounds').is(':checked')) {
+            return null;
+        }
+
+        if (this.player === null) {
+            this._load();
+        }
+        return this.player.play();
+    }
+}
+
+/**
+ * @type {Object<String, AudioFile>}
+ */
+const audioFiles = {
+    changeBet: new AudioFile("changeBet", 0.6),
+    startSlotMachine: new AudioFile("pornestePacanele", 0.6),
+    alarm: new AudioFile("alarma", 0.6),
+    winLine: new AudioFile("winLine", 0.6),
+    collect: new AudioFile("collect", 0.6),
+    winDouble: new AudioFile("winDouble", 0.6),
+    spinNoise: new AudioFile("seInvarte", 0.09),
+    buttonNoise: new AudioFile("apasaButonul", 0.6)
+}
 
 let coins = 0;
 let bet = 50;
@@ -53,16 +89,6 @@ let backCoins = coins * 2;
 let backBet = bet * 2;
 
 let rolling = 0;
-
-function playAudio(audioName) {
-    if ($('#sounds').is(':checked')) {
-        for (let i = 0; i < audioIds.length; i++) {
-            if (audioIds[i] == audioName) {
-                audios[i].play();
-            }
-        }
-    }
-}
 
 function insertCoin(amount) {
     coins += amount;
@@ -78,7 +104,7 @@ function setBet(amount) {
         bet = amount;
         backBet = bet * 2;
         $('#ownedBet').empty().append(bet);
-        playAudio("changeBet");
+        audioFiles.changeBet.play();
     }
 }
 
@@ -143,7 +169,7 @@ function endWithWin(x, sound) {
     canDouble = x;
 
     if (sound == 1) { // WinAtDouble
-        playAudio("winDouble");
+        audioFiles.winDouble.play();
         timesPayoutDoubled++;
         if (timesPayoutDoubled >= 4) {
             pressROLL();
@@ -179,7 +205,7 @@ function voteColor(x, color) {
             historyColor = 'red';
         }
 
-        if(historyColor !== null) {
+        if (historyColor !== null) {
             $historyPanel.append("<img src='img/" + historyColor + ".png' width=30px height=30px/>");
         }
     }
@@ -193,7 +219,7 @@ function voteColor(x, color) {
 
 function spin(timer) {
     let winnings = 0;
-    playAudio("seInvarte");
+    audioFiles.spinNoise.play();
     for (let i = 1; i < 6; i++) {
         let z = 2;
         let oldSeed = -1;
@@ -267,20 +293,20 @@ function spin(timer) {
             case 2:
                 if (last == 1) {
                     lvl = 1;
-                    setTimeout(playAudio, 3950, "winLine");
+                    setTimeout(audioFiles.winLine.play, 3950);
                 }
                 break;
             case 3:
                 lvl = 1;
-                setTimeout(playAudio, 3950, "winLine");
+                setTimeout(audioFiles.winLine.play, 3950);
                 break;
             case 4:
                 lvl = 2;
-                setTimeout(playAudio, 3200 + 700 + 0.3 * k * 1000, "alarma");
+                setTimeout(audioFiles.alarm.play, 3200 + 700 + 0.3 * k * 1000);
                 break;
             case 5:
                 lvl = 2;
-                setTimeout(playAudio, 3200 + 0.3 * k * 1000, "alarma");
+                setTimeout(audioFiles.alarm.play, 3200 + 0.3 * k * 1000);
                 break;
         }
         if (lvl > 0) {
@@ -305,7 +331,7 @@ function pressROLL() {
                 bet = backBet / 2;
             }
 
-            playAudio("apasaButonul");
+            audioFiles.button.play();
             $('.slot').removeClass('winner1 winner2');
             if (coins >= bet && coins !== 0) {
                 insertCoin(-bet);
@@ -318,7 +344,7 @@ function pressROLL() {
             }
         } else {
             setTimeout(insertCoin, 200, canDouble);
-            playAudio("collect");
+            audioFiles.collect.play();
             looseDouble();
         }
     }
@@ -389,7 +415,7 @@ function resetRings() {
 function toggleSlotMachine(start, numCoins) {
     if (start == true) {
         allFile.css("display", "block");
-        playAudio("pornestePacanele");
+        audioFiles.startSlotMachine.play();
         coins = 0;
         insertCoin(numCoins);
 
@@ -426,14 +452,6 @@ jQuery(function () {
     createSlots($('#ring3'), 3);
     createSlots($('#ring4'), 4);
     createSlots($('#ring5'), 5);
-    for (let i = 0; i < audioIds.length; i++) {
-        audios[i] = document.createElement('audio');
-        audios[i].setAttribute('src', 'audio/' + audioIds[i] + '.wav');
-        audios[i].volume = 0.6;
-        if (audioIds[i] == "seInvarte") {
-            audios[i].volume = 0.09;
-        }
-    }
 
     $('.win').hide();
     $('.dblOrNothing').hide();
