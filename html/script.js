@@ -129,7 +129,7 @@ function reverseStr(str) {
 let canDouble = 0;
 const colorHistory = [-1];
 
-let dubleDate = 0;
+let timesPayoutDoubled = 0;
 
 function endWithWin(x, sound) {
     $('#win').empty().append(x);
@@ -144,8 +144,8 @@ function endWithWin(x, sound) {
 
     if (sound == 1) { // WinAtDouble
         playAudio("winDouble");
-        dubleDate++;
-        if (dubleDate >= 4) {
+        timesPayoutDoubled++;
+        if (timesPayoutDoubled >= 4) {
             pressROLL();
         }
     }
@@ -153,7 +153,7 @@ function endWithWin(x, sound) {
 
 function looseDouble() {
     canDouble = 0;
-    dubleDate = 0;
+    timesPayoutDoubled = 0;
     $('.win').hide();
     $('.dblOrNothing').hide();
 
@@ -163,26 +163,27 @@ function looseDouble() {
 }
 
 function voteColor(x, color) {
-    const rcolor = Math.floor(Math.random() * (2));
-    colorHistory[colorHistory.length] = rcolor;
+    const randomColor = Math.floor(Math.random() * (2));
+    colorHistory[colorHistory.length] = randomColor;
 
     let pls = 1;
-    for (var cont = colorHistory.length; cont >= colorHistory.length - 8; cont--) {
+    for (let historyIndex = colorHistory.length; historyIndex >= colorHistory.length - 8; historyIndex--) {
         let imgColor = "none";
-        if (colorHistory[cont] == 1) {
+        if (colorHistory[historyIndex] == 1) {
             imgColor = 'black';
         }
-        if (colorHistory[cont] == 0) {
+        if (colorHistory[historyIndex] == 0) {
             imgColor = 'red';
         }
-        $('#h' + pls).empty();
+        let $h_pls = $('#h' + pls);
+        $h_pls.empty();
         if (imgColor !== "none") {
-            $('#h' + pls).append("<img src='img/" + imgColor + ".png' width=30px height=30px/>");
+            $h_pls.append("<img src='img/" + imgColor + ".png' width=30px height=30px/>");
             pls++;
         }
     }
 
-    if (rcolor == color) {
+    if (randomColor == color) {
         endWithWin(x * 2, 1);
     } else {
         looseDouble();
@@ -190,13 +191,14 @@ function voteColor(x, color) {
 }
 
 function spin(timer) {
-    let winnings = 0, backWinnings = 0;
+    let winnings = 0;
     playAudio("seInvarte");
     for (let i = 1; i < 6; i++) {
         let z = 2;
         let oldSeed = -1;
 
-        const oldClass = $('#ring' + i).attr('class');
+        let $ringElement = $('#ring' + i);
+        const oldClass = $ringElement.attr('class');
         if (oldClass.length > 4) {
             oldSeed = parseInt(oldClass.slice(10));
         }
@@ -239,7 +241,7 @@ function spin(timer) {
             }
         }
 
-        $('#ring' + i)
+        $ringElement
             .css('animation', 'back-spin 1s, spin-' + seed + ' ' + (timer + i * 0.5) + 's')
             .attr('class', 'ring spin-' + seed);
     }
@@ -247,7 +249,9 @@ function spin(timer) {
     const cords = [crd1, crd2, crd3, crd4, crd5];
 
     for (const k in lines) {
-        let wins = 0, last = table[lines[k][0][0]][lines[k][0][1]], lvl = 0, lasx;
+        let wins = 0;
+        let last = table[lines[k][0][0]][lines[k][0][1]];
+        let lvl = 0;
 
         for (const x in lines[k]) {
             if (last == table[lines[k][x][0]][lines[k][x][1]]) {
@@ -277,8 +281,6 @@ function spin(timer) {
                 lvl = 2;
                 setTimeout(playAudio, 3200 + 0.3 * k * 1000, "alarma");
                 break;
-            default:
-                0;
         }
         if (lvl > 0) {
             winnings = winnings + bet * winTable[table[lines[k][wins - 1][0]][lines[k][wins - 1][1]]][wins - 1];
@@ -404,7 +406,7 @@ function toggleSlotMachine(start, numCoins) {
 }
 
 window.addEventListener('message', function (event) {
-    if (event.data.showPacanele == "open") {
+    if (event.data['showSlotMachine'] == "open") {
         toggleSlotMachine(true, event.data.coinAmount);
     }
 });
@@ -415,7 +417,7 @@ window.addEventListener('message', function (event) {
 /// Where we started: https://codepen.io/AdrianSandu/pen/MyBQYz
 /// Everything it's possible !
 
-$(document).ready(function () {
+jQuery(function () {
     allFile = $("#stage");
     allFile.css("display", "none");
     createSlots($('#ring1'), 1);
@@ -454,10 +456,10 @@ $(document).ready(function () {
                 pressBLACK(); // right-arrow
                 break;
             case 38:
-                setBet(bet + 50); // creste BET
+                setBet(bet + 50); // raise BET
                 break;
             case 40:
-                setBet(bet - 50); // scade BET
+                setBet(bet - 50); // lower BET
                 break;
             case 27:
                 toggleSlotMachine(false, 0); // ESC

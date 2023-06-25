@@ -88,7 +88,7 @@ AddEventHandler("esx_slots:UpdateSlots", function(lei)
 	SetNuiFocus(true, true)
 	open = true
 	SendNUIMessage({
-		showPacanele = "open",
+		showSlotMachine = "open",
 		coinAmount = tonumber(lei)
 	})
 end)
