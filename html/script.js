@@ -409,10 +409,10 @@ window.addEventListener('message', function (event) {
     }
 });
 
-/// sa stii ca tot a fost facut cu pasiune si dragoste de plesalex100#7387
-/// scriu asta aici pentru ca stiu ca doar cei carora le pasa ce
-/// dreq s-a intamplat aici vor citii ceva. Timp total de munca: ~15 ore
-/// De la ce am pornit: https://codepen.io/AdrianSandu/pen/MyBQYz
+/// know that everything was done with passion and love by plesalex100#7387
+/// I write this here because I know that only those who care what
+/// what happened here, you will read something. Total working time: ~15 hours
+/// Where we started: https://codepen.io/AdrianSandu/pen/MyBQYz
 /// Everything it's possible !
 
 $(document).ready(function () {
