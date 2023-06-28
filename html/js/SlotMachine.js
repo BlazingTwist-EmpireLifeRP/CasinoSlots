@@ -129,24 +129,70 @@ class SlotMachine {
     }
 
     /**
+     * @typedef {Object} WinningLine
+     * @property {Slot[]} line
+     * @property {number} numMatchingSymbols
+     * @property {number} rewardLevel
+     */
+
+    /**
      * @typedef {Object} SpinResult
      * @property {number} payoutMultiplier
      * @property {number} maxRewardLevel
+     * @property {WinningLine[]} winningLines
      */
 
     /**
      * @return {SpinResult}
      */
     spinReels() {
+        this.randomizeSlots();
         this.insertCoins(-this.bet);
 
         this.isSpinning = true;
+        setTimeout((slotMachine) => {
+            slotMachine.isSpinning = false
+        }, 4500, this);
+
         for (let i = 0; i < this.reels.length; i++) {
             this.reels[i].spinReel((i + 1) * 0.5);
         }
 
+        return this._checkPayout();
+    }
+
+    /**
+     * Do a simulated spin, used for balancing the payout
+     * @return {SpinResult}
+     */
+    simulateSpin() {
+        // simulate randomization, because updating the UI is slow
+        const symbolPool = [];
+        for (let i = 0; i < (SLOTS_PER_REEL * 3); i++) {
+            symbolPool.push(this._getRandomSymbol());
+        }
+        for (let reel of this.reels) {
+            shuffle(symbolPool);
+            for (let slotIndex = 0; slotIndex < reel.slots.length; slotIndex++) {
+                reel.slots[slotIndex].symbol = symbolPool[slotIndex];
+            }
+        }
+
+        for (let reel of this.reels) {
+            reel.simulateSpin();
+        }
+        return this._checkPayout();
+    }
+
+    /**
+     * @return {SpinResult}
+     * @private
+     */
+    _checkPayout() {
         let payoutMultiplier = 0;
         let maxRewardLevel = 0;
+        /** @type WinningLine[] */
+        const winningLines = [];
 
         for (let lineIndex = 0; lineIndex < this.payLines.length; lineIndex++) {
             // find slots hit by payLine
@@ -172,21 +218,17 @@ class SlotMachine {
             payoutMultiplier += symbolMultiplier;
             const lineRewardLevel = symbolMultiplier > 10 ? 2 : 1;
             maxRewardLevel = Math.max(maxRewardLevel, lineRewardLevel);
-
-            // queue slots for being marked as "winning" slots
-            for (let slotIndex = 0; slotIndex < numMatchingSymbols; slotIndex++) {
-                const slotTimeOffset = 0.4 * slotIndex * 1000;
-                setTimeout((slot, lvl) => slot.markSlotOnLine(lvl), 3500 + slotTimeOffset, lineSlots[slotIndex], lineRewardLevel);
-            }
+            winningLines.push({
+                line: lineSlots,
+                numMatchingSymbols: numMatchingSymbols,
+                rewardLevel: lineRewardLevel,
+            });
         }
-
-        setTimeout((slotMachine) => {
-            slotMachine.isSpinning = false
-        }, 4500, this);
 
         return {
             payoutMultiplier: payoutMultiplier,
             maxRewardLevel: maxRewardLevel,
+            winningLines: winningLines,
         };
     }
 
@@ -242,6 +284,13 @@ class Reel {
 
         this.htmlElement.style.animation = "back-spin 1s, spin-" + this._topSlotIndex + " " + (2 + animationDelay) + "s";
         this.htmlElement.className = "ring spin-" + this._topSlotIndex;
+    }
+
+    /**
+     * Perform a simulated spin, for balancing the payouts
+     */
+    simulateSpin() {
+        this._topSlotIndex = this._getRandomSlotIndex();
     }
 
     /**
