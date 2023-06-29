@@ -132,13 +132,11 @@ class SlotMachine {
      * @typedef {Object} WinningLine
      * @property {Slot[]} line
      * @property {number} numMatchingSymbols
-     * @property {number} rewardLevel
      */
 
     /**
      * @typedef {Object} SpinResult
      * @property {number} payoutMultiplier
-     * @property {number} maxRewardLevel
      * @property {WinningLine[]} winningLines
      */
 
@@ -190,7 +188,6 @@ class SlotMachine {
      */
     _checkPayout() {
         let payoutMultiplier = 0;
-        let maxRewardLevel = 0;
         /** @type WinningLine[] */
         const winningLines = [];
 
@@ -216,18 +213,14 @@ class SlotMachine {
             }
 
             payoutMultiplier += symbolMultiplier;
-            const lineRewardLevel = symbolMultiplier > 10 ? 2 : 1;
-            maxRewardLevel = Math.max(maxRewardLevel, lineRewardLevel);
             winningLines.push({
                 line: lineSlots,
                 numMatchingSymbols: numMatchingSymbols,
-                rewardLevel: lineRewardLevel,
             });
         }
 
         return {
             payoutMultiplier: payoutMultiplier,
-            maxRewardLevel: maxRewardLevel,
             winningLines: winningLines,
         };
     }

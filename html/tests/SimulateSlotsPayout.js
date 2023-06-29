@@ -26,6 +26,7 @@ function simulateSlotsPayout(numTrials, numSpins, slotMachine) {
                 }
             }
         }
+        console.log("totalPayout: " + totalPayout + " = $" + (totalPayout * 50) + " at $50 bets");
         let spinPayout = totalPayout / numSpins;
         avgSpinPayout += (spinPayout / numTrials);
         spinPayouts.push(spinPayout);
@@ -39,5 +40,5 @@ function simulateSlotsPayout(numTrials, numSpins, slotMachine) {
 }
 
 function testPayout() {
-    simulateSlotsPayout(20, 50000, slotMachine);
+    simulateSlotsPayout(250, 25000, slotMachine);
 }

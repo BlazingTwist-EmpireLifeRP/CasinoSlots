@@ -7,13 +7,13 @@
 
 const slotMachine = new SlotMachine([
     // These symbols contain a list of bet-multipliers, e.g. 3 melons in a row give 10x bet.
-    new Symbol([0, 1, 3, 5, 10], 10, "1"), // cherry
-    new Symbol([0, 0, 4, 10, 15], 8, "2"), // plum
-    new Symbol([0, 0, 4, 10, 15], 8, "3"), // lemon
-    new Symbol([0, 0, 4, 10, 15], 8, "4"), // orange
-    new Symbol([0, 0, 10, 20, 40], 5, "5"), // grape
-    new Symbol([0, 0, 10, 20, 40], 5, "6"), // melon
-    new Symbol([0, 0, 30, 60, 777], 3, "7"), // seven
+    new Symbol([0, 1, 2, 3, 5], 10, "1"), // cherry
+    new Symbol([0, 0, 3, 6, 15], 8, "2"), // plum
+    new Symbol([0, 0, 3, 6, 15], 8, "3"), // lemon
+    new Symbol([0, 0, 3, 6, 15], 8, "4"), // orange
+    new Symbol([0, 0, 5, 10, 25], 5, "5"), // grape
+    new Symbol([0, 0, 5, 10, 25], 5, "6"), // melon
+    new Symbol([0, 0, 7, 77, 777], 3, "7"), // seven
 ], [
     // You can add or remove payLines here
     // each line (of text) represents the sequence of coordinates that form a payLine.
@@ -24,8 +24,11 @@ const slotMachine = new SlotMachine([
     [[0, 0], [1, 1], [2, 2], [3, 1], [4, 0]],
     [[0, 2], [1, 1], [2, 0], [3, 1], [4, 2]],
 
-    [[0, 1], [1, 0], [2, 1], [3, 2], [4, 1]],
-    [[0, 1], [1, 2], [2, 1], [3, 0], [4, 1]],
+//    [[0, 1], [1, 0], [2, 1], [3, 2], [4, 1]],
+//    [[0, 1], [1, 2], [2, 1], [3, 0], [4, 1]],
+
+//    [[0, 2], [1, 2], [2, 1], [3, 0], [4, 0]],
+//    [[0, 0], [1, 0], [2, 1], [3, 2], [4, 2]],
 ]);
 
 const doubleOrNothing = new DoubleOrNothing(4);
@@ -53,21 +56,18 @@ const REEL_RADIUS = 209;
 function spin() {
     audioFiles.spinNoise.play();
     const spinResult = slotMachine.spinReels();
+    const rewardLevel = spinResult.payoutMultiplier > 10 ? 2 : 1;
 
     // queue slots for being marked as "winning" slots
     for (let winningLine of spinResult.winningLines) {
         for (let slotIndex = 0; slotIndex < winningLine.numMatchingSymbols; slotIndex++) {
             const slotTimeOffset = 0.4 * slotIndex * 1000;
-            setTimeout((slot, lvl) => slot.markSlotOnLine(lvl), 3500 + slotTimeOffset, winningLine.line[slotIndex], winningLine.rewardLevel);
+            setTimeout((slot, lvl) => slot.markSlotOnLine(lvl), 3500 + slotTimeOffset, winningLine.line[slotIndex], rewardLevel);
         }
     }
 
     if (spinResult.payoutMultiplier > 0) {
-        if (spinResult.maxRewardLevel < 2) {
-            setTimeout(() => audioFiles.winLine.play(), 3950);
-        } else {
-            setTimeout(() => audioFiles.alarm.play(), 3950);
-        }
+        setTimeout((audio) => audio.play(), 3950, rewardLevel >= 2 ? audioFiles.alarm : audioFiles.winLine);
     }
 
     if (spinResult.payoutMultiplier > 0) {
@@ -177,10 +177,10 @@ jQuery(function () {
                 pressBLACK(); // right-arrow
                 break;
             case 38:
-                slotMachine.raiseBet();
+                slotMachine.raiseBet(); // arrow-up
                 break;
             case 40:
-                slotMachine.lowerBet();
+                slotMachine.lowerBet(); // arrow-down
                 break;
             case 27:
                 toggleSlotMachine(false, 0); // ESC
