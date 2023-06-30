@@ -273,7 +273,7 @@ class Reel {
 
     spinReel(animationDelay) {
         this._topSlotIndex = this._getRandomSlotIndex();
-        this._resetAnimation();
+        this.resetAnimation();
 
         this.htmlElement.style.animation = "back-spin 1s, spin-" + this._topSlotIndex + " " + (2 + animationDelay) + "s";
         this.htmlElement.className = "ring spin-" + this._topSlotIndex;
@@ -305,9 +305,9 @@ class Reel {
     }
 
     /**
-     * @private
+     * resets the reel animation
      */
-    _resetAnimation() {
+    resetAnimation() {
         this.htmlElement.style.animation = "none";
         this.htmlElement.offsetHeight; // reflow
     }

@@ -132,6 +132,11 @@ function toggleSlotMachine(start, numCoins) {
         slotMachine.insertCoins(numCoins);
     } else {
         allFile.css("display", "none");
+
+        for (let reel of slotMachine.reels) {
+            reel.resetAnimation();
+        }
+
         const payoutCoins = slotMachine.takeAllCoins();
         $.post("http://CasinoSlots/exitWith", JSON.stringify({
             payOut: payoutCoins,
