@@ -161,7 +161,6 @@ window.addEventListener('message', function (event) {
 
 jQuery(function () {
     allFile = $("#stage");
-    allFile.css("display", "none");
 
     $('.win').hide();
     $('.dblOrNothing').hide();
