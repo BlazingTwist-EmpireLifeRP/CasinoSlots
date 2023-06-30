@@ -9,18 +9,18 @@ function simulateSlotsPayout(numTrials, numSpins, slotMachine) {
     let timesPentaSeven = 0;
     let timesQuadSeven = 0;
 
-    for(let trialNumber = 0; trialNumber < numTrials; trialNumber++) {
+    for (let trialNumber = 0; trialNumber < numTrials; trialNumber++) {
 
         let totalPayout = 0;
-        for(let spinNumber = 0; spinNumber < numSpins; spinNumber++) {
+        for (let spinNumber = 0; spinNumber < numSpins; spinNumber++) {
             let spinResult = slotMachine.simulateSpin();
             totalPayout = totalPayout - 1 + spinResult.payoutMultiplier;
 
             for (let winningLine of spinResult.winningLines) {
-                if(winningLine.line[0].symbol.imageId === "7") {
-                    if(winningLine.numMatchingSymbols === 4) {
+                if (winningLine.line[0].symbol.imageId === "7") {
+                    if (winningLine.numMatchingSymbols === 4) {
                         timesQuadSeven++;
-                    }else if(winningLine.numMatchingSymbols === 5) {
+                    } else if (winningLine.numMatchingSymbols === 5) {
                         timesPentaSeven++;
                     }
                 }
@@ -41,4 +41,23 @@ function simulateSlotsPayout(numTrials, numSpins, slotMachine) {
 
 function testPayout() {
     simulateSlotsPayout(250, 25000, slotMachine);
+}
+
+function testCoinFlip() {
+    let timesRed = 0;
+    let timesBlack = 0;
+    let timesOthers = 0;
+    for (let i = 0; i < 100_000; i++) {
+        let randomColor = BetColor.getRandomColor();
+        if (betColors.red.colorId === randomColor.colorId) {
+            timesRed++;
+        } else if (betColors.black.colorId === randomColor.colorId) {
+            timesBlack++;
+        } else {
+            timesOthers++;
+        }
+    }
+    console.log("times red: " + timesRed);
+    console.log("times black " + timesBlack);
+    console.log("times others " + timesOthers);
 }
