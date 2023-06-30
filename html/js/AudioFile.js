@@ -16,6 +16,7 @@ class AudioFile {
     _load() {
         this.player = document.createElement('audio');
         this.player.setAttribute('src', 'audio/' + this.fileName + '.wav');
+		this.player.crossOrigin = 'anonymous';
         this.player.volume = this.volume;
     }
 

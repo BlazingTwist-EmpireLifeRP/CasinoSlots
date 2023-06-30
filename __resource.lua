@@ -14,6 +14,10 @@ server_scripts {
 files {
   'html/ui.html',
   'html/script.js',
+  'html/js/ArrayUtils.js',
+  'html/js/AudioFile.js',
+  'html/js/DoubleOrNothing.js',
+  'html/js/SlotMachine.js',
   'html/design.css',
   -- Images
   'html/img/black.png',

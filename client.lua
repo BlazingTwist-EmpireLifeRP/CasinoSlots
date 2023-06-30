@@ -100,7 +100,7 @@ RegisterNUICallback('exitWith', function(data, cb)
 	cb('ok')
 	SetNuiFocus(false, false)
 	open = false
-	TriggerServerEvent("esx_slots:PayOutRewards", data.coinAmount)
+	TriggerServerEvent("esx_slots:PayOutRewards", data.payOut, data.payIn)
 end)
 
 -------------------------------------------------------------------------------

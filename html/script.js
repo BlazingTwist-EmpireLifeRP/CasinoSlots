@@ -53,6 +53,9 @@ const audioFiles = {
 const SLOTS_PER_REEL = 12; // change this and everything breaks, because the original author has hard-coded everything around this being 12
 const REEL_RADIUS = 209;
 
+let allFile;
+let payIn = 0;
+
 function spin() {
     audioFiles.spinNoise.play();
     const spinResult = slotMachine.spinReels();
@@ -117,8 +120,6 @@ function pressRED() {
     }
 }
 
-let allFile;
-
 /**
  * @param {boolean} start
  * @param {number} numCoins
@@ -132,8 +133,9 @@ function toggleSlotMachine(start, numCoins) {
     } else {
         allFile.css("display", "none");
         const payoutCoins = slotMachine.takeAllCoins();
-        $.post("http://empire_slotovi/exitWith", JSON.stringify({
-            coinAmount: payoutCoins
+        $.post("http://CasinoSlots/exitWith", JSON.stringify({
+            payOut: payoutCoins,
+            payIn: payIn,
         }));
     }
 }
@@ -142,6 +144,7 @@ window.addEventListener('message', function (event) {
     // noinspection EqualityComparisonWithCoercionJS not sure if this is intentionally coerced
     if (event.data['showSlotMachine'] == "open") {
         toggleSlotMachine(true, event.data.coinAmount);
+		payIn = event.data.coinAmount;
     }
 });
 

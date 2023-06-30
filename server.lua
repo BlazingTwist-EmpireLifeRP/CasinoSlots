@@ -13,7 +13,6 @@ AddEventHandler("esx_slots:BetsAndMoney", function(bets)
     if xPlayer then
         if bets % 20 == 0 and bets >= 10 then
             if xPlayer.getMoney() >= bets then
-                xPlayer.removeMoney(bets)
                 TriggerClientEvent("esx_slots:UpdateSlots", _source, bets)
             else
                 TriggerClientEvent('esx:showNotification', _source, "Du hast nicht genug Geld.")
@@ -26,16 +25,22 @@ AddEventHandler("esx_slots:BetsAndMoney", function(bets)
 end)
 
 RegisterServerEvent("esx_slots:PayOutRewards")
-AddEventHandler("esx_slots:PayOutRewards", function(amount)
+AddEventHandler("esx_slots:PayOutRewards", function(payOut, payIn)
     local _source   = source
     local xPlayer   = ESX.GetPlayerFromId(_source)
     if xPlayer then
-        amount = tonumber(amount)
-        if amount > 0 then
-            xPlayer.addMoney(amount)
-            TriggerClientEvent('esx:showNotification', _source, "Du hast "..amount.."$ gewonnen.")
-        else
-            TriggerClientEvent('esx:showNotification', _source, "Du hast verloren.")
-        end
+		payOut = tonumber(payOut)
+		payIn = tonumber(payIn)
+		if payOut < payIn then
+			amount = payIn - payOut;
+			xPlayer.removeMoney(amount)
+			TriggerClientEvent('esx:showNotification', _source, "Du hast "..amount.."$ verloren.")
+		elseif payOut > payIn then
+			amount = payOut - payIn;
+			xPlayer.addMoney(amount)
+			TriggerClientEvent('esx:showNotification', _source, "Du hast "..amount.."$ gewonnen.")
+		else
+			TriggerClientEvent('esx:showNotification', _source, "Du hast deinen Einsatz zurückgewonnen.")
+		end
     end
 end)
