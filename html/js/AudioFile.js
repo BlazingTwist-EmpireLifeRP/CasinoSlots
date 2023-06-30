@@ -5,19 +5,12 @@ class AudioFile {
      */
     constructor(fileName, volume) {
         this.fileName = fileName;
-        this.volume = volume;
-        this.player = null;
-    }
+        this.isPlaying = false;
 
-    /**
-     * Add the audioFile to the document
-     * @private
-     */
-    _load() {
-        this.player = document.createElement('audio');
-        this.player.setAttribute('src', 'audio/' + this.fileName + '.wav');
-		this.player.crossOrigin = 'anonymous';
-        this.player.volume = this.volume;
+        /** @type {HTMLAudioElement} */
+        this.player = document.getElementById(this.fileName);
+        this.player.volume = volume;
+        this.player.load();
     }
 
     /**
@@ -28,9 +21,15 @@ class AudioFile {
             return null;
         }
 
-        if (this.player === null) {
-            this._load();
+        if (this.isPlaying) {
+            this.player.pause();
+            this.player.currentTime = 0;
         }
-        return this.player.play();
+
+        this.isPlaying = true;
+        this.player.play()
+            .catch(() => {
+                this.isPlaying = false;
+            })
     }
 }

@@ -30,12 +30,12 @@ files {
   'html/img/item7.png',
   'html/img/red.png',
   -- Audio
-  'html/audio/alarma.wav',
-  'html/audio/apasaButonul.wav',
-  'html/audio/changeBet.wav',
-  'html/audio/collect.wav',
-  'html/audio/pornestePacanele.wav',
-  'html/audio/seInvarte.wav',
-  'html/audio/winDouble.wav',
-  'html/audio/winLine.wav'
+  'html/audio/alarm.ogg',
+  'html/audio/buttonNoise.ogg',
+  'html/audio/changeBet.ogg',
+  'html/audio/collect.ogg',
+  'html/audio/spinNoise.ogg',
+  'html/audio/startSlotMachine.ogg',
+  'html/audio/winDouble.ogg',
+  'html/audio/winLine.ogg'
 }

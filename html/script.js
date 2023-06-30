@@ -37,14 +37,14 @@ const doubleOrNothing = new DoubleOrNothing(4);
  * @type {Object<String, AudioFile>}
  */
 const audioFiles = {
-    changeBet: new AudioFile("changeBet", 0.6),
-    startSlotMachine: new AudioFile("pornestePacanele", 0.6),
-    alarm: new AudioFile("alarma", 0.6),
-    winLine: new AudioFile("winLine", 0.6),
-    collect: new AudioFile("collect", 0.6),
-    winDouble: new AudioFile("winDouble", 0.6),
-    spinNoise: new AudioFile("seInvarte", 0.09),
-    buttonNoise: new AudioFile("apasaButonul", 0.6)
+    alarm: new AudioFile("alarm", 0.4),
+    buttonNoise: new AudioFile("buttonNoise", 0.4),
+    changeBet: new AudioFile("changeBet", 0.4),
+    collect: new AudioFile("collect", 0.4),
+    startSlotMachine: new AudioFile("startSlotMachine", 0.4),
+    spinNoise: new AudioFile("spinNoise", 0.06),
+    winDouble: new AudioFile("winDouble", 0.4),
+    winLine: new AudioFile("winLine", 0.4),
 }
 
 // End of Safely Configurable Stuff
