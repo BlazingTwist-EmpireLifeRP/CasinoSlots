@@ -71,6 +71,17 @@ function KeyboardInput(textEntry, inputText, maxLength)
 end
 
 -------------------------------------------------------------------------------
+-- CLIENT EVENTS
+-------------------------------------------------------------------------------
+AddEventHandler("PlayerKick_SaveState", function()
+	SetNuiFocus(true, true)
+	open = true
+	SendNUIMessage({
+		action = "stopSlotMachine"
+	})
+end)
+
+-------------------------------------------------------------------------------
 -- NET EVENTS
 -------------------------------------------------------------------------------
 RegisterNetEvent("esx_slots:enterBets")
@@ -88,7 +99,7 @@ AddEventHandler("esx_slots:UpdateSlots", function(lei)
 	SetNuiFocus(true, true)
 	open = true
 	SendNUIMessage({
-		showSlotMachine = "open",
+		action = "showSlotMachine",
 		coinAmount = tonumber(lei)
 	})
 end)
@@ -101,6 +112,11 @@ RegisterNUICallback('exitWith', function(data, cb)
 	SetNuiFocus(false, false)
 	open = false
 	TriggerServerEvent("esx_slots:PayOutRewards", data.payOut, data.payIn)
+end)
+
+RegisterNUICallback('pressedSpinReels', function(data, cb)
+	cb('ok')
+	TriggerEvent("empire_afk:PlayerNotAfk")
 end)
 
 -------------------------------------------------------------------------------

@@ -92,6 +92,7 @@ function pressROLL() {
     }
 
     if (slotMachine.checkCanBet()) {
+        $.post("http://CasinoSlots/pressedSpinReels", "{}");
         audioFiles.buttonNoise.play();
         $('.slot').removeClass('winner1 winner2');
         spin();
@@ -121,35 +122,41 @@ function pressRED() {
 }
 
 /**
- * @param {boolean} start
  * @param {number} numCoins
  */
-function toggleSlotMachine(start, numCoins) {
-    if (start) {
-        slotMachine.initialize();
-        allFile.css("display", "block");
-        audioFiles.startSlotMachine.play();
-        slotMachine.insertCoins(numCoins);
-    } else {
-        allFile.css("display", "none");
+function showSlotMachine(numCoins) {
+    payIn = numCoins;
+    slotMachine.initialize();
+    allFile.css("display", "block");
+    audioFiles.startSlotMachine.play();
+    slotMachine.insertCoins(numCoins);
+}
 
-        for (let reel of slotMachine.reels) {
-            reel.resetAnimation();
-        }
+function stopSlotMachine() {
+    allFile.css("display", "none");
 
-        const payoutCoins = slotMachine.takeAllCoins();
-        $.post("http://CasinoSlots/exitWith", JSON.stringify({
-            payOut: payoutCoins,
-            payIn: payIn,
-        }));
+    for (let reel of slotMachine.reels) {
+        reel.resetAnimation();
     }
+
+    const payoutCoins = slotMachine.takeAllCoins() + doubleOrNothing.takePayout();
+    const payInCache = payIn;
+    payIn = 0;
+    $.post("http://CasinoSlots/exitWith", JSON.stringify({
+        payOut: payoutCoins,
+        payIn: payInCache,
+    }));
 }
 
 window.addEventListener('message', function (event) {
     // noinspection EqualityComparisonWithCoercionJS not sure if this is intentionally coerced
-    if (event.data['showSlotMachine'] == "open") {
-        toggleSlotMachine(true, event.data.coinAmount);
-		payIn = event.data.coinAmount;
+    if (event.data['action'] == "showSlotMachine") {
+        showSlotMachine(event.data.coinAmount);
+    }
+
+    // noinspection EqualityComparisonWithCoercionJS not sure if this is intentionally coerced
+    if (event.data['action'] == "stopSlotMachine") {
+        stopSlotMachine();
     }
 });
 
