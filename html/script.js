@@ -151,7 +151,7 @@ function stopSlotMachine() {
 window.addEventListener('message', function (event) {
     // noinspection EqualityComparisonWithCoercionJS not sure if this is intentionally coerced
     if (event.data['action'] == "showSlotMachine") {
-        showSlotMachine(event.data.coinAmount);
+        showSlotMachine(event.data['coinAmount']);
     }
 
     // noinspection EqualityComparisonWithCoercionJS not sure if this is intentionally coerced
@@ -197,10 +197,10 @@ jQuery(function () {
                 slotMachine.lowerBet(); // arrow-down
                 break;
             case 27:
-                toggleSlotMachine(false, 0); // ESC
+                stopSlotMachine(); // ESC
                 break;
             case 80:
-                toggleSlotMachine(false, 0); // P - Pause Menu
+                stopSlotMachine(); // P - Pause Menu
                 break;
         }
     });
